@@ -179,7 +179,7 @@ proc newTinyDB*(pathToJsonDB: string, tableName:string = ""): tinydb =
     
     # If the user has not specified a table name, just return the default table
     if not user_specified_table.exists:
-      return tinydb(path: newStrictFile(pathToJsonDB), table:defaultTableName )
+      return tinydb(path: newStrictFile(pathToJsonDB).val.get(), table:defaultTableName )
     
 
     # If the user has specified a table name, check if it exists in the db
@@ -187,7 +187,7 @@ proc newTinyDB*(pathToJsonDB: string, tableName:string = ""): tinydb =
     
     # if the user_specified_table exists in the db, return the tinydb object with their user_specified_table
     if jsonData.contains(user_specified_table.val):      
-      return tinydb(path: newStrictFile(pathToJsonDB), table:user_specified_table.val )
+      return tinydb(path: newStrictFile(pathToJsonDB).val.get(), table:user_specified_table.val )
 
     # if user_specified_table does not exist in the db, create the table and return the db
     else:
@@ -196,7 +196,7 @@ proc newTinyDB*(pathToJsonDB: string, tableName:string = ""): tinydb =
       jsonData.add(user_specified_table.val,%*{"meta":node})
       writeFile(pathToJsonDB, pretty(jsonData))
 
-      return tinydb(path: newStrictFile(pathToJsonDB), table:user_specified_table.val )
+      return tinydb(path: newStrictFile(pathToJsonDB).val.get(), table:user_specified_table.val )
 
   # if db json file does not exist, create it
   if not pathToJsonDB.fileExists:
@@ -225,7 +225,7 @@ proc newTinyDB*(pathToJsonDB: string, tableName:string = ""): tinydb =
                                       mkIfNotExist  = true,
                                       content       = content, 
                                       allowed_ext   = @["json"],
-                                  ),
+                                  ).val.get(),
               table: if user_specified_table.exists: user_specified_table.val else: defaultTableName
             )
 
